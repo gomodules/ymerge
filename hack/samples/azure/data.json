@@ -1,0 +1,7 @@
+{
+  "eventType": "PUT",
+  "applicationId": "/subscriptions/<subId>/resourceGroups/<rgName>/providers/Microsoft.Solutions/applications/<applicationName>",
+  "eventTime": "2019-08-14T19:20:08.1707163Z",
+  "provisioningState": "Succeeded",
+  "applicationDefinitionId": "/subscriptions/<subId>/resourceGroups/<rgName>/providers/Microsoft.Solutions/applicationDefinitions/<appDefName>"
+}
