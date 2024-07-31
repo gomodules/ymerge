@@ -1,0 +1,18 @@
+trickster:
+  registryFQDN: ghcr.io
+  image:
+    registry: appscode
+    repository: trickster
+    tag: ""
+  sidecars:
+    spec:
+    - args:
+      - run
+      - --listen=:4000
+      - --subpath=prometheus
+      - --metrics-addr=:8282
+      - --enable-pprof=true
+      - --platform-url=http://ace-platform-api.ace.svc
+      image: ghcr.io/appscode/prom-authproxy:v0.0.1
+      imagePullPolicy: IfNotPresent
+      name: auth

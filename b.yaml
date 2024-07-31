@@ -1,0 +1,9 @@
+trickster:
+  registryFQDN: ""
+  image:
+    registry: ghcr.io
+    repository: appscode-gcp-mp/ace-mp/trickster
+    tag: 0.1.202474
+  sidecars:
+    spec:
+    - image: ghcr.io/appscode-gcp-mp/ace-mp/prom-authproxy:0.1.202474

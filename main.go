@@ -19,7 +19,6 @@ package main
 import (
 	"fmt"
 	"os"
-
 	"sigs.k8s.io/yaml"
 )
 
@@ -63,16 +62,24 @@ func read(filename string) (map[string]any, error) {
 	return obj, nil
 }
 
-func mergeMaps(a, b map[string]interface{}) map[string]interface{} {
-	out := make(map[string]interface{}, len(a))
+func mergeMaps(a, b map[string]any) map[string]any {
+	out := make(map[string]any, len(a))
 	for k, v := range a {
 		out[k] = v
 	}
 	for k, v := range b {
-		if v, ok := v.(map[string]interface{}); ok {
+		switch vt := v.(type) {
+		case map[string]any:
 			if bv, ok := out[k]; ok {
-				if bv, ok := bv.(map[string]interface{}); ok {
-					out[k] = mergeMaps(bv, v)
+				if bvt, ok := bv.(map[string]any); ok {
+					out[k] = mergeMaps(bvt, vt)
+					continue
+				}
+			}
+		case []any:
+			if bv, ok := out[k]; ok {
+				if bvt, ok := bv.([]any); ok {
+					out[k] = mergeArray(bvt, vt)
 					continue
 				}
 			}
@@ -80,4 +87,33 @@ func mergeMaps(a, b map[string]interface{}) map[string]interface{} {
 		out[k] = v
 	}
 	return out
+}
+
+func mergeArray(a, b []any) []any {
+	if len(a) == 0 {
+		return b
+	} else if len(b) == 0 {
+		return a
+	}
+
+	// https://go.dev/wiki/SliceTricks#extend-capacity
+	len_a, len_b := len(a), len(b)
+	if cap(a) < len_b {
+		a = append(make([]any, 0, len_b), a...)
+	}
+	i := 0
+	for ; i < len_a; i++ {
+		at, aObj := a[i].(map[string]any)
+		bt, bObj := b[i].(map[string]any)
+		if aObj && bObj {
+			a[i] = mergeMaps(at, bt)
+		} else {
+			a[i] = b[i]
+		}
+	}
+	for ; i < len_b; i++ {
+		a[i] = b[i]
+	}
+
+	return a
 }
